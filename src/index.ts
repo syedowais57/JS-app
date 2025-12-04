@@ -1,4 +1,5 @@
 import express from 'express';
+import { greet } from './utils';
 
 const app = express();
 const PORT = 3000;
