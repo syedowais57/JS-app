@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const app = (0, express_1.default)();
 const PORT = 3000;
 app.get('/', (req, res) => {
-    res.sen('Owais - Build Success!');
+    res.send('Owais - Build Success!');
 });
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
