@@ -3,5 +3,8 @@ export function greet(name: string) {
     return `Hello, ${name}! 👋`;
 }
 function greet2(name: string) {
-    return `nt, ${nae}! 👋`;
+    return `not, ${name}! 👋`;
+}
+function greet3(name: string) {
+    return `not, ${name}! 👋`;
 }
