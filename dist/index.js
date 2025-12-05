@@ -14,3 +14,15 @@ app.get('/', (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
+function greet4(name) {
+    return `not, ${name}! 👋`;
+}
+function greet5(name) {
+    return `not, ${name}! 👋`;
+}
+function greet6(name) {
+    return `not, ${name}! 👋`;
+}
+function greet7(name) {
+    return `not, ${name}! 👋`;
+}
