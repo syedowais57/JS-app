@@ -11,6 +11,9 @@ const PORT = 3000;
 app.get('/', (req, res) => {
     res.send('Owais - Build Success!');
 });
+function greet3(name) {
+    return `not, ${name}! 👋`;
+}
 app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

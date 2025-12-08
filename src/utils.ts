@@ -2,7 +2,7 @@
 export function greet(name: string) {
     return `Hello, ${name}! 👋`;
 }
-function greet2(name: string) {
+function greet2(nme: string) {
     return `not, ${name}! 👋`;
 }
 function greet3(name: string) {

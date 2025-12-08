@@ -7,7 +7,9 @@ greet('Owais');
 app.get('/', (req, res) => {
   res.send('Owais - Build Success!');
 });
-
+function greet3(name: string) {
+    return `not, ${name}! 👋`;
+}
 app.listen(PORT, () => {
   console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+}); 
