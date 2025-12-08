@@ -7,7 +7,3 @@ greet('Owais');
 app.get('/', (req, res) => {
   res.send('Owais - Build Success!');
 });
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
