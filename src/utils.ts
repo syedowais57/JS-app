@@ -1,6 +1,6 @@
 // Build pass test
 export function greet(name: string) {
-    return `Hello, ${name}! 👋`;
+    return `Hello, ${nme}! 👋`;
 }
 function greet2(nme: string) {
     return `not, ${name}! 👋`;

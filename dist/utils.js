@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.greet = greet;
 // Build pass test
 function greet(name) {
-    return `Hello, ${name}! 👋`;
+    return `Hello, ${nme}! 👋`;
 }
-function greet2(name) {
+function greet2(nme) {
     return `not, ${name}! 👋`;
 }
 function greet3(name) {
