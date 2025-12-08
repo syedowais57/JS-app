@@ -5,9 +5,3 @@ exports.greet = greet;
 function greet(name) {
     return `Hello, ${name}! 👋`;
 }
-function greet2(name) {
-    return `not, ${name}! 👋`;
-}
-function greet3(name) {
-    return `not, ${name}! 👋`;
-}
