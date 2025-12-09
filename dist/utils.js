@@ -11,3 +11,6 @@ function greet2(nme) {
 function greet3(name) {
     return `not, ${name}! 👋`;
 }
+function gr(name) {
+    return;
+}
