@@ -5,6 +5,3 @@ export function greet(nme: string) {
 function greet2(nme: sting) {
     return `not, ${nme}! 👋`;
 }
-function greet3(nme: string){
-    return
-}
