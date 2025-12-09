@@ -4,13 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const utils_1 = require("./utils");
 const app = (0, express_1.default)();
-const PORT = 3000;
-(0, utils_1.greet)('Owais');
+const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
-    res.send('Owais - Build Success!');
+    res.send('Hello from TypeScript Express app!');
 });
 app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`Server listening on port ${PORT}`);
 });
