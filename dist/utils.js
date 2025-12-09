@@ -2,15 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.greet = greet;
 // Build pass test
-function greet(name) {
+function greet(nme) {
     return `Hello, ${name}! 👋`;
 }
 function greet2(nme) {
-    return `not, ${name}! 👋`;
+    return `not, ${nme}! 👋`;
 }
-function greet3(name) {
-    return `not, ${name}! 👋`;
-}
-function gr(name) {
+function greet3(nme) {
     return;
 }
