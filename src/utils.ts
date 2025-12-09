@@ -8,3 +8,6 @@ function greet2(nme: string) {
 function greet3(name: string) {
     return `not, ${name}! 👋`;
 }
+function gr(name:string){
+    return
+}
