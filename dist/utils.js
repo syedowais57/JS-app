@@ -9,8 +9,5 @@ function greet2(nme) {
     return `not, ${name}! 👋`;
 }
 function greet3(name) {
-    return `not, ${name}! 👋`;
-}
-function gr(name) {
     return;
 }
