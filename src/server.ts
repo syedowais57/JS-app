@@ -169,6 +169,3 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 test-express-app listening on http://localhost:${PORT}`);
-});
