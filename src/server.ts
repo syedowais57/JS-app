@@ -114,10 +114,7 @@ app.post("/users", (req: Request, res: Response) => {
   res.status(201).json(newUser);
 });
 
-/**
- * Update a user.
- * Intentionally allows partial updates with some odd choices.
- */
+
 app.put("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const { name, email } = req.body as { name?: string; email?: string };
