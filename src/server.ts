@@ -127,8 +127,7 @@ app.put("/users/:id", (req: Request, res: Response) => {
     return res.status(404).json({ error: "User not found" });
   }
 
-  // duplicate "compute max id" logic that is not actually needed here
-  // (useless code – something the reviewer should flag)
+
   users.reduce((max, u) => (u.id > max ? u.id : max), 0);
 
   const existing = users[index];
