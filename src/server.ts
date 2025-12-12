@@ -160,8 +160,5 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   });
 });
 
-/**
- * Error handler – quite minimal.
- */
 
 
