@@ -163,9 +163,5 @@ app.delete("/users/:id", (req: Request, res: Response) => {
 /**
  * Error handler – quite minimal.
  */
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("[UNHANDLED ERROR]", err.message);
-  // TODO: return a proper error shape, log stack, etc.
-  res.status(500).json({ error: "Internal server error" });
-});
+
 
