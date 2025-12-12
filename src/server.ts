@@ -1,7 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
 import { greet } from "./utils";
+
 /**
- * Simple in-memory "database" of users.
+ *
  * Intentionally global + mutable to see if the reviewer complains.
  */
 type User = {
