@@ -142,10 +142,7 @@ app.put("/users/:id", (req: Request, res: Response) => {
   res.json(users[index]);
 });
 
-/**
- * Delete a user.
- * Intentionally does not handle concurrent modifications, etc.
- */
+
 app.delete("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const beforeCount = users.length;
