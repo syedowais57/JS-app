@@ -140,19 +140,7 @@ app.put("/users/:id", (req: Request, res: Response) => {
 });
 
 
-app.delete("/users/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const beforeCount = users.length;
 
-  users = users.filter((u) => u.id !== id);
-
-  const deleted = users.length < beforeCount;
-
-  res.json({
-    deleted,
-    totalAfter: users.length,
-  });
-});
 
 
 
