@@ -1,16 +1,8 @@
 import express, { Request, Response, NextFunction } from "express";
-import { greet, validateEmail, formatDate } from "./utils";
+import { greet, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
-
-/**
- *
- * Intentionally global + mutable to see if the reviewer complains.
- */
-type User = {
-  id: number;
-  name: string;
-  email?: string | null;
-};
+import { UserService } from "./services/userService";
+import { CreateUserRequest, UpdateUserRequest } from "./types/user";
 
 const app = express();
 app.use(express.json());
@@ -19,11 +11,8 @@ app.use(express.json());
 const config: AppConfig = getConfig();
 const PORT = config.port;
 
-// 👇 Global mutable state (bad for production, good for testing reviews)
-let users: User[] = [
-  { id: 1, name: "Alice", email: "alice@example.com" },
-  { id: 2, name: "Bob", email: null },
-];
+// Initialize user service
+const userService = new UserService();
 
 // 👇 Very inefficient "slow" function to simulate blocking work
 function simulateSlowOperation(milliseconds: number): void {
@@ -58,35 +47,35 @@ app.get("/health", (_req: Request, res: Response) => {
 
 /**
  * Get all users.
- * Intentionally calls a blocking function to simulate bad performance.
+ * Now uses UserService for better separation of concerns.
  */
 app.get("/users", (_req: Request, res: Response) => {
-  // bad idea: blocking the event loop for 200ms on every request
-  simulateSlowOperation(200);
-
-  res.json({
-    count: users.length,
-    users,
-  });
+  try {
+    const users = userService.getAllUsers();
+    res.json({
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
 
 /**
  * Get a single user by ID.
- * Error handling is a bit messy on purpose.
+ * Improved error handling with proper status codes.
  */
 app.get("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
 
-  // fragile parsing & checks – intentional
   if (!id || Number.isNaN(id)) {
     return res.status(400).json({ error: "Invalid id parameter" });
   }
 
-  const user = users.find((u) => u.id === id);
+  const user = userService.getUserById(id);
 
   if (!user) {
-    // returns 200 even when not found – subtle bug for reviewer
-    return res.json({ message: "User not found" });
+    return res.status(404).json({ error: "User not found" });
   }
 
   res.json(user);
@@ -94,33 +83,72 @@ app.get("/users/:id", (req: Request, res: Response) => {
 
 /**
  * Create a new user.
- * Intentionally does minimal validation and duplicates some logic.
+ * Uses UserService for validation and business logic.
  */
 app.post("/users", (req: Request, res: Response) => {
-  const { name, email } = req.body;
+  try {
+    const userData: CreateUserRequest = req.body;
+    const newUser = userService.createUser(userData);
 
-  if (!name) {
-    return res.status(400).json({ error: "Name is required" });
+    res.status(201).json({
+      message: "User created successfully",
+      user: newUser,
+      createdAt: formatDate(newUser.createdAt || new Date()),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create user";
+    res.status(400).json({ error: message });
+  }
+});
+
+/**
+ * Update an existing user.
+ * New endpoint using UserService.
+ */
+app.put("/users/:id", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  if (!id || Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid id parameter" });
   }
 
-  // Use new validateEmail utility
-  if (email && !validateEmail(email)) {
-    return res.status(400).json({ error: "Invalid email format" });
+  try {
+    const updateData: UpdateUserRequest = req.body;
+    const updatedUser = userService.updateUser(id, updateData);
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({
+      message: "User updated successfully",
+      user: updatedUser,
+      updatedAt: formatDate(updatedUser.updatedAt || new Date()),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update user";
+    res.status(400).json({ error: message });
+  }
+});
+
+/**
+ * Delete a user.
+ * New endpoint using UserService.
+ */
+app.delete("/users/:id", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  if (!id || Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid id parameter" });
   }
 
-  const newUser: User = {
-    id: users.length + 1,
-    name,
-    email: email || null,
-  };
+  const deleted = userService.deleteUser(id);
 
-  users.push(newUser);
+  if (!deleted) {
+    return res.status(404).json({ error: "User not found" });
+  }
 
-  res.status(201).json({
-    message: "User created successfully",
-    user: newUser,
-    createdAt: formatDate(new Date()),
-  });
+  res.json({ message: "User deleted successfully" });
 });
 
 // Start server
