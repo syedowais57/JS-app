@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { greet } from './utils';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
