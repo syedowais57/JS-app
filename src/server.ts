@@ -37,11 +37,13 @@ app.use(requestLogger);
 
 /**
  * Health check – good/simple endpoint.
+ * Returns server status and environment info.
  */
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
     environment: process.env.NODE_ENV || "development",
+    timestamp: new Date().toISOString(),
   });
 });
 
