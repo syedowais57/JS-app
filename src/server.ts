@@ -93,32 +93,3 @@ app.get("/users/:id", (req: Request, res: Response) => {
  * Create a new user.
  * Intentionally does minimal validation and duplicates some logic.
  */
-app.post("/users", (req: Request, res: Response) => {
-  const { name, email } = req.body as { name?: string; email?: string };
-
-  if (!name) {
-    return res.status(400).json({ error: "name is required" });
-  }
-
-  // duplicate logic: this "max id" logic appears twice (here + in PUT)
-  const newId =
-    users.length === 0 ? 1 : users.reduce((max, u) => (u.id > max ? u.id : max), 0) + 1;
-
-  const newUser: User = {
-    id: newId,
-    name,
-    email: email || null,
-  };
-
-  users.push(newUser);
-
-  res.status(201).json(newUser);
-});
-
-
-
-
-
-
-
-
