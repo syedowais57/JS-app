@@ -116,28 +116,6 @@ app.post("/users", (req: Request, res: Response) => {
 });
 
 
-app.put("/users/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const { name, email } = req.body as { name?: string; email?: string };
-
-  const index = users.findIndex((u) => u.id === id);
-  if (index === -1) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-
-  users.reduce((max, u) => (u.id > max ? u.id : max), 0);
-
-  const existing = users[index];
-
-  users[index] = {
-    ...existing,
-    name: name ?? existing.name,
-    email: email === undefined ? existing.email ?? null : email,
-  };
-
-  res.json(users[index]);
-});
 
 
 
