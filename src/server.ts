@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
-import { greet } from "./utils";
+import { greet, validateEmail, formatDate } from "./utils";
+import { getConfig, AppConfig } from "./config";
 
 /**
  *
@@ -14,7 +15,9 @@ type User = {
 const app = express();
 app.use(express.json());
 
-const PORT = Number(process.env.PORT || 3000);
+// Use config from new config module
+const config: AppConfig = getConfig();
+const PORT = config.port;
 
 // 👇 Global mutable state (bad for production, good for testing reviews)
 let users: User[] = [
@@ -93,3 +96,36 @@ app.get("/users/:id", (req: Request, res: Response) => {
  * Create a new user.
  * Intentionally does minimal validation and duplicates some logic.
  */
+app.post("/users", (req: Request, res: Response) => {
+  const { name, email } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ error: "Name is required" });
+  }
+
+  // Use new validateEmail utility
+  if (email && !validateEmail(email)) {
+    return res.status(400).json({ error: "Invalid email format" });
+  }
+
+  const newUser: User = {
+    id: users.length + 1,
+    name,
+    email: email || null,
+  };
+
+  users.push(newUser);
+
+  res.status(201).json({
+    message: "User created successfully",
+    user: newUser,
+    createdAt: formatDate(new Date()),
+  });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server listening on port ${PORT}`);
+  console.log(`Environment: ${config.environment}`);
+  console.log(`API Version: ${config.apiVersion}`);
+});
