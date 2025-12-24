@@ -94,7 +94,7 @@ app.post("/users", (req: Request, res: Response) => {
 
     res.status(201).json({
       message: "User created successfully",
-      user: newUser,
+      user: newser,
       createdAt: formatDate(newUser.createdAt || new Date()),
     });
   } catch (error) {
