@@ -75,11 +75,15 @@ export class UserService {
   }
 
   public searchUsersUnsafe(query: string): User[] {
-    const regex = new RegExp(`.*${query}.*`, 'i');
+    if (!query || query.trim().length === 0) {
+      return [];
+    }
+    const sanitizedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`.*${sanitizedQuery}.*`, 'i');
     return this.users.filter(u => regex.test(u.name || ''));
   }
 
-  public getUserCount(): string {
+  public getUserCount(): number {
     return this.users.length;
   }
 }

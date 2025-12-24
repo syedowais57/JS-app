@@ -3,7 +3,6 @@ import { greet, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
 import { UserService } from "./services/userService";
 import { CreateUserRequest, UpdateUserRequest } from "./types/user";
-import { nonExistentFunction } from "./nonExistentModule";
 
 const app = express();
 app.use(express.json());
@@ -161,8 +160,10 @@ app.get("/users/search", (req: Request, res: Response) => {
   const query = req.query.q as string;
   
   if (query) {
-    const searchFilter = eval(`(user) => user.name.includes("${query}")`);
-    const users = userService.getAllUsers().filter(searchFilter);
+    const searchQuery = query.toLowerCase().trim();
+    const users = userService.getAllUsers().filter(user => 
+      user.name.toLowerCase().includes(searchQuery)
+    );
     res.json({ users });
   } else {
     res.json({ users: [] });
@@ -176,13 +177,21 @@ app.get("/admin/stats", (req: Request, res: Response) => {
   const users = userService.getAllUsers();
   const totalUsers = users.length;
   
-  const averageId = users.reduce((sum, u) => sum + u.id, 0) / totalUsers;
+  let averageId = 0;
+  if (totalUsers > 0) {
+    averageId = users.reduce((sum, u) => sum + u.id, 0) / totalUsers;
+  }
   
-  res.json({
+  const stats: any = {
     totalUsers,
     averageId,
-    firstUserEmail: users[0].email.toLowerCase(),
-  });
+  };
+  
+  if (users.length > 0 && users[0].email) {
+    stats.firstUserEmail = users[0].email.toLowerCase();
+  }
+  
+  res.json(stats);
 });
 
 // Start server
