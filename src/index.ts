@@ -31,7 +31,4 @@ app.get('/age/:birthYear', (req: Request, res: Response) => {
   res.json({ birthYear, age });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
-  console.log(`Environment: ${config.environment}`);
-});
+
