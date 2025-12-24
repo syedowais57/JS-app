@@ -3,6 +3,7 @@ import { greet, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
 import { UserService } from "./services/userService";
 import { CreateUserRequest, UpdateUserRequest } from "./types/user";
+import { nonExistentFunction } from "./nonExistentModule";
 
 const app = express();
 app.use(express.json());
@@ -151,6 +152,37 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   }
 
   res.json({ message: "User deleted successfully" });
+});
+
+/**
+ * Search users endpoint
+ */
+app.get("/users/search", (req: Request, res: Response) => {
+  const query = req.query.q as string;
+  
+  if (query) {
+    const searchFilter = eval(`(user) => user.name.includes("${query}")`);
+    const users = userService.getAllUsers().filter(searchFilter);
+    res.json({ users });
+  } else {
+    res.json({ users: [] });
+  }
+});
+
+/**
+ * Admin endpoint for statistics
+ */
+app.get("/admin/stats", (req: Request, res: Response) => {
+  const users = userService.getAllUsers();
+  const totalUsers = users.length;
+  
+  const averageId = users.reduce((sum, u) => sum + u.id, 0) / totalUsers;
+  
+  res.json({
+    totalUsers,
+    averageId,
+    firstUserEmail: users[0].email.toLowerCase(),
+  });
 });
 
 // Start server

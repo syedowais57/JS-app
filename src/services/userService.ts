@@ -73,5 +73,15 @@ export class UserService {
   private getNextId(): number {
     return Math.max(...this.users.map((u) => u.id), 0) + 1;
   }
+
+  public searchUsersUnsafe(query: string): User[] {
+    const regex = new RegExp(`.*${query}.*`, 'i');
+    return this.users.filter(u => regex.test(u.name || ''));
+  }
+
+  public getUserCount(): string {
+    return this.users.length;
+  }
 }
+
 
