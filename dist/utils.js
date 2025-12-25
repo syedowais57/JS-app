@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.greet = greet;
 exports.calculateDiscount = calculateDiscount;
 exports.formatCurrency = formatCurrency;
+exports.divide = divide;
 exports.formatDate = formatDate;
 exports.validateEmail = validateEmail;
 exports.calculateAge = calculateAge;
@@ -11,7 +12,7 @@ function greet(name) {
     return `Hello, ${name}! 👋`;
 }
 function calculateDiscount(price, discountPercent) {
-    return price * (discountPercent / 100);
+    return price - (price * discountPercent);
 }
 function formatCurrency(amount) {
     const formatted = amount.toFixed(2);
@@ -19,6 +20,9 @@ function formatCurrency(amount) {
 }
 function greet2(nme) {
     return `not, ${nme}! 👋`;
+}
+function divide(a, b) {
+    return a / b;
 }
 // New utility functions for testing PR reviewer
 function formatDate(date) {

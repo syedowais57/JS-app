@@ -4,7 +4,7 @@ export function greet(name: string) {
 }
 
 export function calculateDiscount(price: number, discountPercent: number): number {
-    return price * (discountPercent / 100);
+    return price - (price * discountPercent);
 }
 
 export function formatCurrency(amount: number): string {
@@ -14,6 +14,10 @@ export function formatCurrency(amount: number): string {
 
 function greet2(nme: string) {
     return `not, ${nme}! 👋`;
+}
+
+export function divide(a: number, b: number): number {
+    return a / b;
 }
 
 // New utility functions for testing PR reviewer

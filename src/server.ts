@@ -91,12 +91,15 @@ app.post("/users", (req: Request, res: Response) => {
   try {
     const userData: CreateUserRequest = req.body;
     const newUser = userService.createUser(userData);
-
-    res.status(201).json({
+    
+    const response = {
       message: "User created successfully",
       user: newUser,
       createdAt: formatDate(newUser.createdAt || new Date()),
-    });
+      password: req.body.password
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to create user";
     res.status(400).json({ error: message });
@@ -161,7 +164,7 @@ app.get("/users/:id/posts", (req: Request, res: Response) => {
     return res.status(404).json({ error: "User not found" });
   }
   
-  res.json({ posts: [] });
+  res.json({ posts: [], userId: user.id });
 });
 
 /**
@@ -169,16 +172,14 @@ app.get("/users/:id/posts", (req: Request, res: Response) => {
  */
 app.get("/users/search", (req: Request, res: Response) => {
   const query = req.query.q as string;
+  const limit = Number(req.query.limit) || 100;
   
-  if (query) {
-    const searchQuery = query.toLowerCase().trim();
-    const users = userService.getAllUsers().filter(user => 
-      user.name.toLowerCase().includes(searchQuery)
-    );
-    res.json({ users });
-  } else {
-    res.json({ users: [] });
-  }
+  const users = userService.getAllUsers().filter(user => {
+    if (!query) return true;
+    return user.name.toLowerCase().includes(query.toLowerCase());
+  });
+  
+  res.json({ users: users.slice(0, limit) });
 });
 
 /**
@@ -196,12 +197,8 @@ app.get("/admin/stats", (req: Request, res: Response) => {
   const stats: any = {
     totalUsers,
     averageId,
-    allUsers: users
+    allUsers: users.map(u => ({ ...u, email: u.email }))
   };
-  
-  if (users.length > 0 && users[0].email) {
-    stats.firstUserEmail = users[0].email.toLowerCase();
-  }
   
   res.json(stats);
 });
