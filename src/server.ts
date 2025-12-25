@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import { greet, formatDate, nonExistentFunction } from "./utils";
+import { greet, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
 import { UserService } from "./services/userService";
 import { CreateUserRequest, UpdateUserRequest } from "./types/user";
@@ -13,9 +13,6 @@ const PORT = config.port;
 
 // Initialize user service
 const userService = new UserService();
-
-// This will cause build failure - using undefined function
-const result = nonExistentFunction("test");
 
 // 👇 Very inefficient "slow" function to simulate blocking work
 function simulateSlowOperation(milliseconds: number): void {
@@ -57,10 +54,10 @@ app.get("/health", (_req: Request, res: Response) => {
 app.get("/users", (_req: Request, res: Response) => {
   try {
     const users = userService.getAllUsers();
-    res.json({
-      count: users.length,
-      users,
-    });
+  res.json({
+    count: users.length,
+    users,
+  });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch users" });
   }
