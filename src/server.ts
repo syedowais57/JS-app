@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import { greet, formatDate } from "./utils";
+import { greet, formatDate, nonExistentFunction } from "./utils";
 import { getConfig, AppConfig } from "./config";
 import { UserService } from "./services/userService";
 import { CreateUserRequest, UpdateUserRequest } from "./types/user";
@@ -13,6 +13,9 @@ const PORT = config.port;
 
 // Initialize user service
 const userService = new UserService();
+
+// This will cause build failure - using undefined function
+const result = nonExistentFunction("test");
 
 // 👇 Very inefficient "slow" function to simulate blocking work
 function simulateSlowOperation(milliseconds: number): void {
