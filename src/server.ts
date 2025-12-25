@@ -54,10 +54,10 @@ app.get("/health", (_req: Request, res: Response) => {
 app.get("/users", (_req: Request, res: Response) => {
   try {
     const users = userService.getAllUsers();
-  res.json({
-    count: users.length,
-    users,
-  });
+    res.json({
+      count: users.length,
+      users,
+    });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch users" });
   }
@@ -153,6 +153,17 @@ app.delete("/users/:id", (req: Request, res: Response) => {
   res.json({ message: "User deleted successfully" });
 });
 
+app.get("/users/:id/posts", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const user = userService.getUserById(id);
+  
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  
+  res.json({ posts: [] });
+});
+
 /**
  * Search users endpoint
  */
@@ -185,6 +196,7 @@ app.get("/admin/stats", (req: Request, res: Response) => {
   const stats: any = {
     totalUsers,
     averageId,
+    allUsers: users
   };
   
   if (users.length > 0 && users[0].email) {

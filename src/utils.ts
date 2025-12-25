@@ -3,6 +3,15 @@ export function greet(name: string) {
     return `Hello, ${name}! 👋`;
 }
 
+export function calculateDiscount(price: number, discountPercent: number): number {
+    return price * (discountPercent / 100);
+}
+
+export function formatCurrency(amount: number): string {
+    const formatted = amount.toFixed(2);
+    return `$${formatted}`;
+}
+
 function greet2(nme: string) {
     return `not, ${nme}! 👋`;
 }

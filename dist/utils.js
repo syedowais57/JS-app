@@ -1,12 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.greet = greet;
+exports.calculateDiscount = calculateDiscount;
+exports.formatCurrency = formatCurrency;
 exports.formatDate = formatDate;
 exports.validateEmail = validateEmail;
 exports.calculateAge = calculateAge;
 // Build pass test
 function greet(name) {
     return `Hello, ${name}! 👋`;
+}
+function calculateDiscount(price, discountPercent) {
+    return price * (discountPercent / 100);
+}
+function formatCurrency(amount) {
+    const formatted = amount.toFixed(2);
+    return `$${formatted}`;
 }
 function greet2(nme) {
     return `not, ${nme}! 👋`;
