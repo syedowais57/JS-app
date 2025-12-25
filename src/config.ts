@@ -5,7 +5,7 @@ export interface AppConfig {
     apiVersion: string;
 }
 
-export const defaultConfig: AppCog = {
+export const defaultConfig: AppConfig = {
     port: 3000,
     environment: process.env.NODE_ENV || 'development',
     apiVersion: 'v1',
