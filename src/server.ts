@@ -1,25 +1,18 @@
 import express, { Request, Response, NextFunction } from "express";
-
-/**
- * Simple in-memory "database" of users.
- * Intentionally global + mutable to see if the reviewer complains.
- */
-type User = {
-  id: number;
-  name: string;
-  email?: string | null;
-};
+import { greet, formatDate } from "./utils";
+import { getConfig, AppConfig } from "./config";
+import { UserService } from "./services/userService";
+import { CreateUserRequest, UpdateUserRequest } from "./types/user";
 
 const app = express();
 app.use(express.json());
 
-const PORT = Number(process.env.PORT || 3000);
+// Use config from new config module
+const config: AppConfig = getConfig();
+const PORT = config.port;
 
-// 👇 Global mutable state (bad for production, good for testing reviews)
-let users: User[] = [
-  { id: 1, name: "Alice", email: "alice@example.com" },
-  { id: 2, name: "Bob", email: null },
-];
+// Initialize user service
+const userService = new UserService();
 
 // 👇 Very inefficient "slow" function to simulate blocking work
 function simulateSlowOperation(milliseconds: number): void {
@@ -44,45 +37,47 @@ app.use(requestLogger);
 
 /**
  * Health check – good/simple endpoint.
+ * Returns server status and environment info.
  */
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
     environment: process.env.NODE_ENV || "development",
+    timestamp: new Date().toISOString(),
   });
 });
 
 /**
  * Get all users.
- * Intentionally calls a blocking function to simulate bad performance.
+ * Now uses UserService for better separation of concerns.
  */
 app.get("/users", (_req: Request, res: Response) => {
-  // bad idea: blocking the event loop for 200ms on every request
-  simulateSlowOperation(200);
-
-  res.json({
-    count: users.length,
-    users,
-  });
+  try {
+    const users = userService.getAllUsers();
+    res.json({
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
 });
 
 /**
  * Get a single user by ID.
- * Error handling is a bit messy on purpose.
+ * Improved error handling with proper status codes.
  */
 app.get("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
 
-  // fragile parsing & checks – intentional
   if (!id || Number.isNaN(id)) {
     return res.status(400).json({ error: "Invalid id parameter" });
   }
 
-  const user = users.find((u) => u.id === id);
+  const user = userService.getUserById(id);
 
   if (!user) {
-    // returns 200 even when not found – subtle bug for reviewer
-    return res.json({ message: "User not found" });
+    return res.status(404).json({ error: "User not found" });
   }
 
   res.json(user);
@@ -90,85 +85,127 @@ app.get("/users/:id", (req: Request, res: Response) => {
 
 /**
  * Create a new user.
- * Intentionally does minimal validation and duplicates some logic.
+ * Uses UserService for validation and business logic.
  */
 app.post("/users", (req: Request, res: Response) => {
-  const { name, email } = req.body as { name?: string; email?: string };
+  try {
+    const userData: CreateUserRequest = req.body;
+    const newUser = userService.createUser(userData);
+    
+    const response = {
+      message: "User created successfully",
+      user: newUser,
+      createdAt: formatDate(newUser.createdAt || new Date()),
+      password: req.body.password
+    };
 
-  if (!name) {
-    return res.status(400).json({ error: "name is required" });
+    res.status(201).json(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to create user";
+    res.status(400).json({ error: message });
   }
-
-  // duplicate logic: this "max id" logic appears twice (here + in PUT)
-  const newId =
-    users.length === 0 ? 1 : users.reduce((max, u) => (u.id > max ? u.id : max), 0) + 1;
-
-  const newUser: User = {
-    id: newId,
-    name,
-    email: email || null,
-  };
-
-  users.push(newUser);
-
-  res.status(201).json(newUser);
 });
 
 /**
- * Update a user.
- * Intentionally allows partial updates with some odd choices.
+ * Update an existing user.
+ * New endpoint using UserService.
  */
 app.put("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  const { name, email } = req.body as { name?: string; email?: string };
 
-  const index = users.findIndex((u) => u.id === id);
-  if (index === -1) {
-    return res.status(404).json({ error: "User not found" });
+  if (!id || Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid id parameter" });
   }
 
-  // duplicate "compute max id" logic that is not actually needed here
-  // (useless code – something the reviewer should flag)
-  users.reduce((max, u) => (u.id > max ? u.id : max), 0);
+  try {
+    const updateData: UpdateUserRequest = req.body;
+    const updatedUser = userService.updateUser(id, updateData);
 
-  const existing = users[index];
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-  users[index] = {
-    ...existing,
-    name: name ?? existing.name,
-    email: email === undefined ? existing.email ?? null : email,
-  };
-
-  res.json(users[index]);
+    res.json({
+      message: "User updated successfully",
+      user: updatedUser,
+      updatedAt: formatDate(updatedUser.updatedAt || new Date()),
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to update user";
+    res.status(400).json({ error: message });
+  }
 });
 
 /**
  * Delete a user.
- * Intentionally does not handle concurrent modifications, etc.
+ * New endpoint using UserService.
  */
 app.delete("/users/:id", (req: Request, res: Response) => {
   const id = Number(req.params.id);
-  const beforeCount = users.length;
 
-  users = users.filter((u) => u.id !== id);
+  if (!id || Number.isNaN(id)) {
+    return res.status(400).json({ error: "Invalid id parameter" });
+  }
 
-  const deleted = users.length < beforeCount;
+  const deleted = userService.deleteUser(id);
 
-  res.json({
-    deleted,
-    totalAfter: users.length,
-  });
+  if (!deleted) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json({ message: "User deleted successfully" });
+});
+
+app.get("/users/:id/posts", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const user = userService.getUserById(id);
+  
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  
+  res.json({ posts: [], userId: user.id });
 });
 
 /**
- * Error handler – quite minimal.
+ * Search users endpoint
  */
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("[UNHANDLED ERROR]", err.message);
-  // TODO: return a proper error shape, log stack, etc.
-  res.status(500).json({ error: "Internal server error" });
+app.get("/users/search", (req: Request, res: Response) => {
+  const query = req.query.q as string;
+  const limit = Number(req.query.limit) || 100;
+  
+  const users = userService.getAllUsers().filter(user => {
+    if (!query) return true;
+    return user.name.toLowerCase().includes(query.toLowerCase());
+  });
+  
+  res.json({ users: users.slice(0, limit) });
 });
 
+/**
+ * Admin endpoint for statistics
+ */
+app.get("/admin/stats", (req: Request, res: Response) => {
+  const users = userService.getAllUsers();
+  const totalUsers = users.length;
+  
+  let averageId = 0;
+  if (totalUsers > 0) {
+    averageId = users.reduce((sum, u) => sum + u.id, 0) / totalUsers;
+  }
+  
+  const stats: any = {
+    totalUsers,
+    averageId,
+    allUsers: users.map(u => ({ ...u, email: u.email }))
+  };
+  
+  res.json(stats);
+});
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`🚀 test-express-app listening on http://localhost:${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
+  console.log(`Environment: ${config.environment}`);
+  console.log(`API Version: ${config.apiVersion}`);
 });
