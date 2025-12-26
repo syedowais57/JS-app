@@ -1,7 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
+import { greet, validateEmail, formatDate } from "./utils";
+import { getConfig, AppConfig } from "./config";
 
 /**
- * Simple in-memory "database" of users.
+ *
  * Intentionally global + mutable to see if the reviewer complains.
  */
 type User = {
@@ -13,7 +15,9 @@ type User = {
 const app = express();
 app.use(express.json());
 
-const PORT = Number(process.env.PORT || 3000);
+// Use config from new config module
+const config: AppConfig = getConfig();
+const PORT = config.port;
 
 // 👇 Global mutable state (bad for production, good for testing reviews)
 let users: User[] = [
@@ -93,82 +97,35 @@ app.get("/users/:id", (req: Request, res: Response) => {
  * Intentionally does minimal validation and duplicates some logic.
  */
 app.post("/users", (req: Request, res: Response) => {
-  const { name, email } = req.body as { name?: string; email?: string };
+  const { name, email } = req.body;
 
   if (!name) {
-    return res.status(400).json({ error: "name is required" });
+    return res.status(400).json({ error: "Name is required" });
   }
 
-  // duplicate logic: this "max id" logic appears twice (here + in PUT)
-  const newId =
-    users.length === 0 ? 1 : users.reduce((max, u) => (u.id > max ? u.id : max), 0) + 1;
+  // Use new validateEmail utility
+  if (email && !validateEmail(email)) {
+    return res.status(400).json({ error: "Invalid email format" });
+  }
 
   const newUser: User = {
-    id: newId,
+    id: users.length + 1,
     name,
     email: email || null,
   };
 
   users.push(newUser);
 
-  res.status(201).json(newUser);
-});
-
-/**
- * Update a user.
- * Intentionally allows partial updates with some odd choices.
- */
-app.put("/users/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const { name, email } = req.body as { name?: string; email?: string };
-
-  const index = users.findIndex((u) => u.id === id);
-  if (index === -1) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  // duplicate "compute max id" logic that is not actually needed here
-  // (useless code – something the reviewer should flag)
-  users.reduce((max, u) => (u.id > max ? u.id : max), 0);
-
-  const existing = users[index];
-
-  users[index] = {
-    ...existing,
-    name: name ?? existing.name,
-    email: email === undefined ? existing.email ?? null : email,
-  };
-
-  res.json(users[index]);
-});
-
-/**
- * Delete a user.
- * Intentionally does not handle concurrent modifications, etc.
- */
-app.delete("/users/:id", (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const beforeCount = users.length;
-
-  users = users.filter((u) => u.id !== id);
-
-  const deleted = users.length < beforeCount;
-
-  res.json({
-    deleted,
-    totalAfter: users.length,
+  res.status(201).json({
+    message: "User created successfully",
+    user: newUser,
+    createdAt: formatDate(new Date()),
   });
 });
 
-/**
- * Error handler – quite minimal.
- */
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-  console.error("[UNHANDLED ERROR]", err.message);
-  // TODO: return a proper error shape, log stack, etc.
-  res.status(500).json({ error: "Internal server error" });
-});
-
+// Start server
 app.listen(PORT, () => {
-  console.log(`🚀 test-express-app listening on http://localhost:${PORT}`);
+  console.log(`Server listening on port ${PORT}`);
+  console.log(`Environment: ${config.environment}`);
+  console.log(`API Version: ${config.apiVersion}`);
 });
