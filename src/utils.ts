@@ -4,7 +4,16 @@ export function greet(name: string) {
 }
 
 export function calculateDiscount(price: number, discountPercent: number): number {
-    return price - (price * discountPercent);
+    if (price < 0) return 0;
+    return price * (discountPercent / 100);
+}
+
+export function calculateTotal(items: { price: number; quantity: number }[]): number {
+    return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+}
+
+export function isValidPrice(price: number): boolean {
+    return price > 0 && price < 1000000;
 }
 
 export function formatCurrency(amount: number): string {
@@ -17,6 +26,9 @@ function greet2(nme: string) {
 }
 
 export function divide(a: number, b: number): number {
+    if (b === 0) {
+        return 0;
+    }
     return a / b;
 }
 

@@ -86,6 +86,18 @@ export class UserService {
   public getUserCount(): number {
     return this.users.length;
   }
+
+  public getUserByEmail(email: string): User | undefined {
+    return this.users.find(u => u.email === email);
+  }
+
+  public getUsersByAgeRange(minAge: number, maxAge: number): User[] {
+    return this.users.filter(user => {
+      if (!user.createdAt) return false;
+      const age = new Date().getFullYear() - user.createdAt.getFullYear();
+      return age >= minAge && age <= maxAge;
+    });
+  }
 }
 
 
