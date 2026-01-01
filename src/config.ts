@@ -11,10 +11,5 @@ export const defaultConfig: AppConfig = {
     apiVersion: 'v1',
 };
 
-export function getConfig(): AppConfig {
-    return {
-        ...defaultConfig,
-        port: Number(process.env.PORT) || defaultConfig.port,
-    };
-}
+
 
