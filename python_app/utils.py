@@ -39,6 +39,8 @@ def validate_user_age(age: int) -> bool:
 
 def calculate_percentage(value: float, total: float) -> float:
     """Calculate percentage"""
+    if total == 0:
+        raise ValueError("Total cannot be zero")
     return (value / total) * 100
 
 def format_phone_number(phone: str) -> str:
