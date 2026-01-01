@@ -94,9 +94,12 @@ app.post("/users", (req: Request, res: Response) => {
     
     const response = {
       message: "User created successfully",
-      user: newUser,
-      createdAt: formatDate(newUser.createdAt || new Date()),
-      password: req.body.password
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email
+      },
+      createdAt: formatDate(newUser.createdAt || new Date())
     };
 
     res.status(201).json(response);
@@ -164,7 +167,32 @@ app.get("/users/:id/posts", (req: Request, res: Response) => {
     return res.status(404).json({ error: "User not found" });
   }
   
-  res.json({ posts: [], userId: user.id });
+  const limit = Number(req.query.limit) || 10;
+  const offset = Number(req.query.offset) || 0;
+  
+  res.json({ 
+    posts: [], 
+    userId: user.id,
+    total: 0,
+    limit,
+    offset
+  });
+});
+
+app.get("/users/:id/profile", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const user = userService.getUserById(id);
+  
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  
+  res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    createdAt: user.createdAt
+  });
 });
 
 /**
@@ -179,7 +207,59 @@ app.get("/users/search", (req: Request, res: Response) => {
     return user.name.toLowerCase().includes(query.toLowerCase());
   });
   
-  res.json({ users: users.slice(0, limit) });
+  res.json({ 
+    users: users.slice(0, limit),
+    total: users.length,
+    query: query,
+    limit: limit
+  });
+  
+  console.log("Search query:", query, "Limit:", limit);
+});
+
+app.post("/users/:id/orders", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const user = userService.getUserById(id);
+  
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  
+  const items = req.body.items;
+  const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const tax = total * 0.1;
+  
+  res.json({
+    orderId: Math.random().toString(36).substring(7),
+    userId: id,
+    items: items,
+    total: total,
+    tax: tax,
+    status: "pending",
+    userEmail: user.email
+  });
+});
+
+app.get("/users/:id/stats", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const user = userService.getUserById(id);
+  
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  
+  const orderCount = 5;
+  const totalSpent = orderCount * 100;
+  
+  const stats = {
+    userId: id,
+    orderCount: orderCount,
+    totalSpent: totalSpent,
+    lastOrderDate: user.createdAt,
+    userEmail: user.email
+  };
+  
+  res.json(stats);
 });
 
 /**
