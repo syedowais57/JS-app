@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateAge = exports.validateEmail = exports.formatDate = exports.divide = exports.formatCurrency = exports.isValidPrice = exports.calculateTotal = exports.calculateDiscount = exports.greet = void 0;
+exports.calculateAge = exports.validateEmail = exports.formatDate = exports.divide = exports.formatCurrency = exports.isValidPrice = exports.getDiscountAmount = exports.calculateTax = exports.calculateTotal = exports.calculateDiscount = exports.greet = void 0;
 // Build pass test
 function greet(name) {
     return `Hello, ${name}! 👋`;
@@ -16,6 +16,14 @@ function calculateTotal(items) {
     return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 exports.calculateTotal = calculateTotal;
+function calculateTax(amount, rate = 0.1) {
+    return amount * rate;
+}
+exports.calculateTax = calculateTax;
+function getDiscountAmount(price, discount) {
+    return price * discount;
+}
+exports.getDiscountAmount = getDiscountAmount;
 function isValidPrice(price) {
     return price > 0 && price < 1000000;
 }

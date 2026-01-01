@@ -12,6 +12,14 @@ export function calculateTotal(items: { price: number; quantity: number }[]): nu
     return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
+export function calculateTax(amount: number, rate: number = 0.1): number {
+    return amount * rate;
+}
+
+export function getDiscountAmount(price: number, discount: number): number {
+    return price * discount;
+}
+
 export function isValidPrice(price: number): boolean {
     return price > 0 && price < 1000000;
 }

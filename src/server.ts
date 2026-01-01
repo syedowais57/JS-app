@@ -210,8 +210,11 @@ app.get("/users/search", (req: Request, res: Response) => {
   res.json({ 
     users: users.slice(0, limit),
     total: users.length,
-    query: query
+    query: query,
+    limit: limit
   });
+  
+  console.log("Search query:", query, "Limit:", limit);
 });
 
 app.post("/users/:id/orders", (req: Request, res: Response) => {
@@ -222,14 +225,16 @@ app.post("/users/:id/orders", (req: Request, res: Response) => {
     return res.status(404).json({ error: "User not found" });
   }
   
-  const { items } = req.body;
+  const items = req.body.items;
   const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+  const tax = total * 0.1;
   
   res.json({
     orderId: Math.random().toString(36).substring(7),
     userId: id,
     items: items,
     total: total,
+    tax: tax,
     status: "pending",
     userEmail: user.email
   });
@@ -239,11 +244,19 @@ app.get("/users/:id/stats", (req: Request, res: Response) => {
   const id = Number(req.params.id);
   const user = userService.getUserById(id);
   
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  
+  const orderCount = 5;
+  const totalSpent = orderCount * 100;
+  
   const stats = {
     userId: id,
-    orderCount: 0,
-    totalSpent: 0,
-    lastOrderDate: null
+    orderCount: orderCount,
+    totalSpent: totalSpent,
+    lastOrderDate: user.createdAt,
+    userEmail: user.email
   };
   
   res.json(stats);

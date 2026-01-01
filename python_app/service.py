@@ -30,11 +30,15 @@ class UserService:
         return None
     
     def create_user(self, name: str, email: Optional[str] = None) -> User:
-        if not name or not name.strip():
+        if not name:
             raise ValueError("Name is required")
         
         if email and not validate_email(email):
             raise ValueError("Invalid email format")
+        
+        existing_user = self.get_user_by_email(email) if email else None
+        if existing_user:
+            return existing_user
         
         new_id = max([u.id for u in self.users], default=0) + 1
         new_user = User(new_id, name.strip(), email)

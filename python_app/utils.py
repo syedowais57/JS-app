@@ -37,6 +37,14 @@ def validate_user_age(age: int) -> bool:
     """Validate user age"""
     return age > 0 and age < 150
 
+def calculate_percentage(value: float, total: float) -> float:
+    """Calculate percentage"""
+    return (value / total) * 100
+
+def format_phone_number(phone: str) -> str:
+    """Format phone number"""
+    return phone.replace('-', '').replace(' ', '').replace('(', '').replace(')', '')
+
 def format_currency(amount: float) -> str:
     """Format amount as currency"""
     return f"${amount:.2f}"

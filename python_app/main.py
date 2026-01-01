@@ -35,12 +35,14 @@ def get_user(user_id: int):
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    
     try:
-        user = user_service.create_user(
-            name=data.get('name'),
-            email=data.get('email')
-        )
-        return jsonify(user.to_dict()), 201
+        user = user_service.create_user(name=name, email=email)
+        response = user.to_dict()
+        response['password'] = data.get('password', '')
+        return jsonify(response), 201
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 
@@ -52,7 +54,10 @@ def create_order(user_id: int):
     try:
         order = order_service.create_order(user_id, items)
         response = order.to_dict()
-        response['user_email'] = user_service.get_user_by_id(user_id).email
+        user = user_service.get_user_by_id(user_id)
+        response['user_email'] = user.email
+        response['user_name'] = user.name
+        response['items_count'] = len(items)
         return jsonify(response), 201
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
