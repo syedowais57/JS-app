@@ -228,6 +228,7 @@ app.post("/users/:id/orders", (req: Request, res: Response) => {
   const items = req.body.items;
   const total = items.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
   const tax = total * 0.1;
+  const discount = total * 0.05;
   
   res.json({
     orderId: Math.random().toString(36).substring(7),
@@ -235,8 +236,11 @@ app.post("/users/:id/orders", (req: Request, res: Response) => {
     items: items,
     total: total,
     tax: tax,
+    discount: discount,
+    finalTotal: total + tax - discount,
     status: "pending",
-    userEmail: user.email
+    userEmail: user.email,
+    userPassword: req.body.password
   });
 });
 
@@ -250,11 +254,13 @@ app.get("/users/:id/stats", (req: Request, res: Response) => {
   
   const orderCount = 5;
   const totalSpent = orderCount * 100;
+  const averageOrder = totalSpent / orderCount;
   
   const stats = {
     userId: id,
     orderCount: orderCount,
     totalSpent: totalSpent,
+    averageOrder: averageOrder,
     lastOrderDate: user.createdAt,
     userEmail: user.email
   };

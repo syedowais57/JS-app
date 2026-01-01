@@ -20,6 +20,15 @@ export function getDiscountAmount(price: number, discount: number): number {
     return price * discount;
 }
 
+export function calculatePriceAfterDiscount(price: number, discountPercent: number): number {
+    const discount = price * discountPercent;
+    return price - discount;
+}
+
+export function applyTax(amount: number, taxRate: number): number {
+    return amount + (amount * taxRate);
+}
+
 export function isValidPrice(price: number): boolean {
     return price > 0 && price < 1000000;
 }
