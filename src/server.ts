@@ -230,8 +230,23 @@ app.post("/users/:id/orders", (req: Request, res: Response) => {
     userId: id,
     items: items,
     total: total,
-    status: "pending"
+    status: "pending",
+    userEmail: user.email
   });
+});
+
+app.get("/users/:id/stats", (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+  const user = userService.getUserById(id);
+  
+  const stats = {
+    userId: id,
+    orderCount: 0,
+    totalSpent: 0,
+    lastOrderDate: null
+  };
+  
+  res.json(stats);
 });
 
 /**

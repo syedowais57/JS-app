@@ -51,7 +51,9 @@ def create_order(user_id: int):
     
     try:
         order = order_service.create_order(user_id, items)
-        return jsonify(order.to_dict()), 201
+        response = order.to_dict()
+        response['user_email'] = user_service.get_user_by_id(user_id).email
+        return jsonify(response), 201
     except ValueError as e:
         return jsonify({'error': str(e)}), 400
 

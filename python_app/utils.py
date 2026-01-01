@@ -37,3 +37,11 @@ def validate_user_age(age: int) -> bool:
     """Validate user age"""
     return age > 0 and age < 150
 
+def format_currency(amount: float) -> str:
+    """Format amount as currency"""
+    return f"${amount:.2f}"
+
+def calculate_tax(amount: float, tax_rate: float = 0.1) -> float:
+    """Calculate tax amount"""
+    return amount * tax_rate
+
