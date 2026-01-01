@@ -67,7 +67,7 @@ app.get("/users", (_req: Request, res: Response) => {
  * Get a single user by ID.
  * Improved error handling with proper status codes.
  */
-app.get("/users/:id", (req: Request, res: Response) => {
+app.get("/users/:id", (req: Request, res: Resnse) => {
   const id = Number(req.params.id);
 
   if (!id || Number.isNaN(id)) {
