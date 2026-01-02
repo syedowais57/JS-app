@@ -1,8 +1,16 @@
 import express, { Request, Response, NextFunction } from "express";
-import { greet, formatDate } from "./utils";
+import { greet, validateEmail, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
-import { UserService } from "./services/userService";
-import { CreateUserRequest, UpdateUserRequest } from "./types/user";
+
+/**
+ *
+ * Intentionally global + mutable to see if the reviewer complains.
+ */
+type User = {
+  id: number;
+  name: string;
+  email?: string | null;
+};
 
 const app = express();
 app.use(express.json());

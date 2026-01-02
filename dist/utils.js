@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateAge = exports.validateEmail = exports.formatDate = exports.divide = exports.formatCurrency = exports.isValidPrice = exports.applyTax = exports.calculatePriceAfterDiscount = exports.getDiscountAmount = exports.calculateTax = exports.calculateTotal = exports.calculateDiscount = exports.greet = void 0;
+
 // Build pass test
 function greet(name) {
     return `Hello, ${name}! 👋`;
@@ -45,23 +45,12 @@ exports.formatCurrency = formatCurrency;
 function greet2(nme) {
     return `not, ${nme}! 👋`;
 }
-function divide(a, b) {
-    if (b === 0) {
-        return 0;
-    }
-    return a / b;
-}
-exports.divide = divide;
+
 // New utility functions for testing PR reviewer
 function formatDate(date) {
     return date.toISOString().split('T')[0];
 }
-exports.formatDate = formatDate;
-function validateEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-}
-exports.validateEmail = validateEmail;
+
 function calculateAge(birthDate) {
     const today = new Date();
     let age = today.getFullYear() - birthDate.getFullYear();
