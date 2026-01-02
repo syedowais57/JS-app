@@ -16,22 +16,4 @@ app.get('/', (req, res) => {
         timestamp: new Date().toISOString(),
         apiVersion: config.apiVersion,
     });
-});
-app.get('/greet/:name', (req, res) => {
-    const { name } = req.params;
-    const greeting = (0, utils_1.greet)(name);
-    res.json({ greeting });
-});
-app.get('/age/:birthYear', (req, res) => {
-    const birthYear = parseInt(req.params.birthYear);
-    if (isNaN(birthYear)) {
-        return res.status(400).json({ error: 'Invalid birth year' });
-    }
-    const birthDate = new Date(birthYear, 0, 1);
-    const age = (0, utils_1.calculateAge)(birthDate);
-    res.json({ birthYear, age });
-});
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
-    console.log(`Environment: ${config.environment}`);
-});
+
