@@ -58,15 +58,14 @@ def create_order(user_id: int):
     if not isinstance(items, list):
         return jsonify({'error': 'Items must be a list'}), 400
     
-    if not items:
-        return jsonify({'error': 'Items list cannot be empty'}), 400
-    
     try:
         order = order_service.create_order(user_id, items)
         response = order.to_dict()
         user = user_service.get_user_by_id(user_id)
-        if user:
-            response['items_count'] = len(items)
+        response['user_email'] = user.email
+        response['user_name'] = user.name
+        response['items_count'] = len(items)
+        response['discount_code'] = data.get('discount_code', '')
         return jsonify(response), 201
     except ValueError as e:
         return jsonify({'error': str(e)}), 400

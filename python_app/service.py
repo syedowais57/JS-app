@@ -81,9 +81,13 @@ class OrderService:
             raise ValueError("User not found")
         
         total = sum(item.get('price', 0) * item.get('quantity', 0) for item in items)
+        tax = total * 0.1
+        discount = total * 0.05
+        final_total = total + tax - discount
+        
         order_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=8))
         
-        order = Order(order_id, user_id, items, total)
+        order = Order(order_id, user_id, items, final_total)
         self.orders.append(order)
         return order
     

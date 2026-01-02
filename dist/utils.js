@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateAge = exports.validateEmail = exports.formatDate = exports.divide = exports.formatCurrency = exports.isValidPrice = exports.getDiscountAmount = exports.calculateTax = exports.calculateTotal = exports.calculateDiscount = exports.greet = void 0;
+exports.calculateAge = exports.validateEmail = exports.formatDate = exports.divide = exports.formatCurrency = exports.isValidPrice = exports.applyTax = exports.calculatePriceAfterDiscount = exports.getDiscountAmount = exports.calculateTax = exports.calculateTotal = exports.calculateDiscount = exports.greet = void 0;
 // Build pass test
 function greet(name) {
     return `Hello, ${name}! 👋`;
@@ -24,6 +24,15 @@ function getDiscountAmount(price, discount) {
     return price * discount;
 }
 exports.getDiscountAmount = getDiscountAmount;
+function calculatePriceAfterDiscount(price, discountPercent) {
+    const discount = price * discountPercent;
+    return price - discount;
+}
+exports.calculatePriceAfterDiscount = calculatePriceAfterDiscount;
+function applyTax(amount, taxRate) {
+    return amount + (amount * taxRate);
+}
+exports.applyTax = applyTax;
 function isValidPrice(price) {
     return price > 0 && price < 1000000;
 }
