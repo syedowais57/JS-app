@@ -91,12 +91,19 @@ export class UserService {
     return this.users.find(u => u.email === email);
   }
 
-  public getUsersByAgeRange(minAge: number, maxAge: number): User[] {
-    return this.users.filter(user => {
-      if (!user.createdAt) return false;
-      const age = new Date().getFullYear() - user.createdAt.getFullYear();
-      return age >= minAge && age <= maxAge;
-    });
+  public searchUsers(query: string): User[] {
+    if (!query || query.trim().length === 0) {
+      return this.users;
+    }
+    const searchQuery = query.toLowerCase().trim();
+    return this.users.filter(user => 
+      user.name.toLowerCase().includes(searchQuery) ||
+      (user.email && user.email.toLowerCase().includes(searchQuery))
+    );
+  }
+
+  public getActiveUsers(): User[] {
+    return this.users.filter(user => user.email !== null);
   }
 }
 

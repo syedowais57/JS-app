@@ -3,6 +3,7 @@ import { greet, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
 import { UserService } from "./services/userService";
 import { CreateUserRequest, UpdateUserRequest } from "./types/user";
+import { requireAuth } from "./middleware/auth";
 
 const app = express();
 app.use(express.json());
@@ -213,8 +214,6 @@ app.get("/users/search", (req: Request, res: Response) => {
     query: query,
     limit: limit
   });
-  
-  console.log("Search query:", query, "Limit:", limit);
 });
 
 app.post("/users/:id/orders", (req: Request, res: Response) => {
@@ -270,8 +269,9 @@ app.get("/users/:id/stats", (req: Request, res: Response) => {
 
 /**
  * Admin endpoint for statistics
+ * Requires authentication
  */
-app.get("/admin/stats", (req: Request, res: Response) => {
+app.get("/admin/stats", requireAuth, (req: Request, res: Response) => {
   const users = userService.getAllUsers();
   const totalUsers = users.length;
   
