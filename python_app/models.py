@@ -4,7 +4,7 @@ Data models for the application
 from typing import Optional, List
 from datetime import datetime
 
-class User:
+
     def __init__(self, user_id: int, name: str, email: Optional[str] = None):
         self.id = user_id
         self.name = name

@@ -121,6 +121,10 @@ app.put("/users/:id", (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid id parameter" });
   }
 
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(400).json({ error: "Request body is required" });
+  }
+
   try {
     const updateData: UpdateUserRequest = req.body;
     const updatedUser = userService.updateUser(id, updateData);

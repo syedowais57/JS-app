@@ -93,7 +93,7 @@ export class UserService {
 
   public searchUsers(query: string): User[] {
     if (!query || query.trim().length === 0) {
-      return this.users;
+      return [];
     }
     const searchQuery = query.toLowerCase().trim();
     return this.users.filter(user => 
