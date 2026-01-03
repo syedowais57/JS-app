@@ -1,5 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
-import { greet, formatDate } from "./utils";
+import { greet, validateEmail, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
 import { UserService } from "./services/userService";
 import { CreateUserRequest, UpdateUserRequest } from "./types/user";

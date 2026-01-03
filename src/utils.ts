@@ -42,13 +42,6 @@ function greet2(nme: string) {
     return `not, ${nme}! 👋`;
 }
 
-export function divide(a: number, b: number): number {
-    if (b === 0) {
-        return 0;
-    }
-    return a / b;
-}
-
 // New utility functions for testing PR reviewer
 export function formatDate(date: Date): string {
     return date.toISOString().split('T')[0];

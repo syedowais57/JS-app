@@ -1,18 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.greet = greet;
-exports.calculateDiscount = calculateDiscount;
-exports.calculateTotal = calculateTotal;
-exports.calculateTax = calculateTax;
-exports.getDiscountAmount = getDiscountAmount;
-exports.calculatePriceAfterDiscount = calculatePriceAfterDiscount;
-exports.applyTax = applyTax;
-exports.isValidPrice = isValidPrice;
-exports.formatCurrency = formatCurrency;
-exports.divide = divide;
-exports.formatDate = formatDate;
-exports.validateEmail = validateEmail;
-exports.calculateAge = calculateAge;
+
 // Build pass test
 function greet(name) {
     return `Hello, ${name}! 👋`;
@@ -48,12 +36,7 @@ function formatCurrency(amount) {
 function greet2(nme) {
     return `not, ${nme}! 👋`;
 }
-function divide(a, b) {
-    if (b === 0) {
-        return 0;
-    }
-    return a / b;
-}
+
 // New utility functions for testing PR reviewer
 function formatDate(date) {
     return date.toISOString().split('T')[0];
