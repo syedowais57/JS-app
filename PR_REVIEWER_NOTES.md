@@ -26,3 +26,4 @@ This is expected behavior when the PR reviewer bot runs in AWS Lambda environmen
 ## Update 2 - Performance improvements
 ## Update 3 - Bug fixes
 ## Update 4 - Code refactoring
+## Update 5 - Documentation update
