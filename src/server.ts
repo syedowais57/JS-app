@@ -1,16 +1,9 @@
 import express, { Request, Response, NextFunction } from "express";
 import { greet, validateEmail, formatDate } from "./utils";
 import { getConfig, AppConfig } from "./config";
-
-/**
- *
- * Intentionally global + mutable to see if the reviewer complains.
- */
-type User = {
-  id: number;
-  name: string;
-  email?: string | null;
-};
+import { UserService } from "./services/userService";
+import { CreateUserRequest, UpdateUserRequest } from "./types/user";
+import { requireAuth } from "./middleware/auth";
 
 const app = express();
 app.use(express.json());
@@ -128,6 +121,10 @@ app.put("/users/:id", (req: Request, res: Response) => {
     return res.status(400).json({ error: "Invalid id parameter" });
   }
 
+  if (!req.body || Object.keys(req.body).length === 0) {
+    return res.status(400).json({ error: "Request body is required" });
+  }
+
   try {
     const updateData: UpdateUserRequest = req.body;
     const updatedUser = userService.updateUser(id, updateData);
@@ -221,8 +218,6 @@ app.get("/users/search", (req: Request, res: Response) => {
     query: query,
     limit: limit
   });
-  
-  console.log("Search query:", query, "Limit:", limit);
 });
 
 app.post("/users/:id/orders", (req: Request, res: Response) => {
@@ -278,8 +273,9 @@ app.get("/users/:id/stats", (req: Request, res: Response) => {
 
 /**
  * Admin endpoint for statistics
+ * Requires authentication
  */
-app.get("/admin/stats", (req: Request, res: Response) => {
+app.get("/admin/stats", requireAuth, (req: Request, res: Response) => {
   const users = userService.getAllUsers();
   const totalUsers = users.length;
   

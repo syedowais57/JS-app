@@ -4,7 +4,7 @@ Data models for the application
 from typing import Optional, List
 from datetime import datetime
 
-class User:
+
     def __init__(self, user_id: int, name: str, email: Optional[str] = None):
         self.id = user_id
         self.name = name
@@ -16,7 +16,7 @@ class User:
             'id': self.id,
             'name': self.name,
             'email': self.email,
-            'created_at': self.created_at.isoformat()
+            'created_at': self.created_at.isoformat() if self.created_at else None
         }
 
 class Order:
